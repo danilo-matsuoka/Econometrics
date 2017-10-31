@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------- 
 # This code implements moral hazard programs with lotteries
 # based on the MATLAB code provided by
 # Karaivanov, A. K. (2001): Computing Moral Hazard Programs with Lotteries Using Lotteries, 

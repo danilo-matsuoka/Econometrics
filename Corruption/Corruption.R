@@ -238,7 +238,7 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
 program.A()     #Benchmark A 
 program.B()     #Benchmark B
 
-#Examples for varying parameters
+#Examples (changing parameters)
 program.A(a=.2)
 program.A(tau=-.2)
 program.B(be=.2)

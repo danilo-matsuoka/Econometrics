@@ -12,6 +12,8 @@
 #### Load Packages ####
 library(lpSolveAPI)
 library(VGAM)
+#if these packages are not installed, run: 
+#install.packages(c("lpSolveAPI", "VGAM"))
 
 ################################### Program for Model A ###############################################
 

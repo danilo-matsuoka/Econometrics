@@ -236,12 +236,12 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
   
   c(list(final),list(-valor))}
 
+#Examples 1. Benchmarks solutions.
+program.A()           #Benchmark A 
+program.B()           #Benchmark B
 
-program.A()     #Benchmark A 
-program.B()     #Benchmark B
-
-#Examples (changing parameters)
-program.A(a=.2)
+#Examples 2. Changing the parameters.
+program.A(a=.2)       
 program.A(tau=-.2)
 program.B(be=.2)
 

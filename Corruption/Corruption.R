@@ -123,7 +123,8 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   final=round(cbind(aa[xp], oo[xp], ww[xp], resultado[xp]),digits=3) 
   colnames(final)=c("h","b","w","probabilidade")
   
-  c(list(final),list(-valor))
+  result=c(list(final),list(-valor));names(result)=c("opt.values","exp.utility")
+  return(result)
 }
 
 
@@ -234,7 +235,9 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
   final=round(cbind(aa[xp], oo[xp], ww[xp], resultado[xp]),digits=3)
   colnames(final)=c("h","b","w","probabilidade")
   
-  c(list(final),list(-valor))}
+  result=c(list(final),list(-valor));names(result)=c("opt.values","exp.utility")
+  return(result)
+  }
 
 #Examples 1. Benchmarks solutions.
 program.A()           #Benchmark A 

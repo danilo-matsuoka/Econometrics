@@ -111,7 +111,7 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   solve(my.lp)
   
   resultado=get.variables(my.lp)                 #Values of the choice variables (solution)
-  valor=get.objective(my.lp)                     #Value of the objective function (solution)
+  valor=round(get.objective(my.lp),digits=3)     #Value of the objective function (solution)
   
   #### Optimal Contract ####
   ww = kronecker(rep(1, nb*nh), wages)

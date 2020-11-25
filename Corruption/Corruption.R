@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------------------------------------
 
 #### Load Packages ####
-library(lpSolveAPI)
+library(lpSolveAPI)     #if not installed, run the code: install.packages('lpSolveAPI')
 library(VGAM)
 
 ################################### Program for Case A ################################################

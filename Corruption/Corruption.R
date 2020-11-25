@@ -1,23 +1,21 @@
-# ---------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------
 # This code implements moral hazard programs with lotteries
 # based on the MATLAB code provided by
-# Karaivanov, A. K. (2001): Computing Moral Hazard Programs With Lotteries Using Matlab, 
+# Karaivanov, A. K. (2001): Computing Moral Hazard Programs with Lotteries Using Lotteries, 
 # Working paper, Department of Economics, University of Chicago.
 
-# Version: 31/10/2017
-# Compatibility: R version 3.4.1 (2017-06-30)
+# Last update: 25/11/2020
+# R version 4.0.0 (2020-04-24)
 # Author: Danilo Hiroshi Matsuoka   (danilomatsuoka@gmail.com)
-# ---------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 #### Load Packages ####
 library(lpSolveAPI)
 library(VGAM)
-#if these packages are not installed, run: 
-#install.packages(c("lpSolveAPI", "VGAM"))
 
-################################### Program for Model A ###############################################
+################################### Program for Case A ################################################
 
-program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wmax=2,bl=1,bh=3){
+program.A=function(tau=0,a=.5,U=1,nw=50,nh=50,hmin=10^(-10),hmax=1-10^(-10),wmin=1,wmax=2,bl=1,bh=3){
   #tau    := Bureaucrat's relative risk aversion
   #a      := Output's conditional distribution parameter
   #U      := Reservation utility
@@ -43,7 +41,7 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   #### Objective Function ####
   
   objective = -kronecker(rep(1, nh), kronecker(output, rep(1, nw))) + 
-              kronecker(rep(1, nb*nh), wages)         #Principal's expected utility
+    kronecker(rep(1, nb*nh), wages)         #Principal's expected utility
   
   #### Matrix of Coefficients ####
   
@@ -53,12 +51,12 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   
   #Mother nature constraints
   Aeq2 = t(kronecker(diag(nh*nb), rep(1,nw))) - t(kronecker(t(kronecker(diag(nh),rep(1,nb))*
-         (Prob%*%rep(1,nh))), rep(1,nb*nw)))          
+                                                                (Prob%*%rep(1,nh))), rep(1,nb*nw)))          
   beq2 = rep(0,nh*nb)                                                   
   
   #Participation constraint
   A1 = -(1-tau)^-1*kronecker(rep(1, nb*nh),wages)^(1-tau) - 
-   (kronecker(1-action, rep(1,nw*nb)))                
+    (kronecker(1-action, rep(1,nw*nb)))                
   b1 = -U                                             
   
   #Incentive compatibility constraints
@@ -103,7 +101,7 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   }
   set.objfn(my.lp,objective)                     #Seting the objective function 
   set.constr.type(my.lp,                         #Seting the types of contraints
-                 c(rep("<=",m*(m-1)+1),rep("=",m*n+1)))
+                  c(rep("<=",m*(m-1)+1),rep("=",m*n+1)))
   set.rhs(my.lp, bb)                             #Seting the intercepts
   set.bounds(my.lp, lower =Lower)                #Seting bounds on the choice variables
   set.bounds(my.lp, upper = Upper)
@@ -117,7 +115,7 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   ww = kronecker(rep(1, nb*nh), wages)
   oo = kronecker(rep(1, nh), kronecker(output, rep(1, nw)))
   aa = kronecker(action,rep(1, nw*nb))
- 
+  
   xp=which(resultado>10^-4)
   #Recover the triples (h,b,w) associated to the nonzero optimal values
   final=round(cbind(aa[xp], oo[xp], ww[xp], resultado[xp]),digits=3) 
@@ -127,10 +125,9 @@ program.A=function(tau=0,a=.5,U=1,nw=50,nh=60,hmin=10^-8,hmax=1-10^-8,wmin=1,wma
   return(result)
 }
 
+################################### Program for Case B ################################################
 
-################################### Program for Model B ###############################################
-
-program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
+program.B=function(be=0,tau=0,U=0.5,nw=50,wmin=1,nh=50,hmin=10^-8,hmax=5-10^(-10),nb=5){
   #be     := Degree of bureaucrat's altruism
   #tau    := Bureaucrat's relative risk aversion
   #U      := Reservation utility
@@ -139,17 +136,19 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
   #nb     := Number of possible outputs
   #hmin   := Minimum action level
   #wmin   := Minimum compensation
+  #wmax   := Maximum compensation
+  #hmax   := Maximum action level
+  #bh     := Maximum bureaucratic efficiency
   #### Preliminaries ####
+  bh=wmax=nb                                          #By assumption
+  wages=seq(wmin,wmax,length=nw)                      #Set of compensations (W)
+  action=seq(hmin,hmax,length=nh)                     #Set of action levels (H)
+  output=seq(1,bh,by=1)                               #Set of outputs (B)
   
-  wmax=nb                                               #Maximum compensation
-  hmax=nb-10^-8                                         #Maximum action level 
-  wages=seq(wmin,wmax,length=nw)                        #Set of compensations (W)
-  action=seq(hmin,hmax,length=nh)                       #Set of action levels (H)
-  output=seq(0,nb-1,by=1)                               #Set of outputs (B)
   
   Prob=matrix(unlist(lapply(1:nh,function(i) {          #Conditional probabilities matrix (beta-binomial)
-       dbetabinom.ab(output, size=tail(output,n=1), 
-                     shape1=action[i], shape2=(nb-action[i])*(1-action[i]/nb))} )),ncol=1)
+    dbetabinom.ab(output, size=tail(output,n=1), 
+                  shape1=action[i], shape2=(nb-action[i])*(1-action[i]/nb))} )),ncol=1)
   Upper=rep(1,nh*nb*nw)                                 #Vector of upper bounds for the choice variables
   Lower=rep(0,nh*nb*nw)                                 #Vector of lower bounds for the choice variables
   
@@ -165,12 +164,12 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
   
   #Mother nature constraints
   Aeq2 = t(kronecker(diag(nh*nb), rep(1,nw))) - 
-         t(kronecker(t(kronecker(diag(nh),rep(1,nb))*(Prob%*%rep(1,nh))), rep(1,nb*nw)))
+    t(kronecker(t(kronecker(diag(nh),rep(1,nb))*(Prob%*%rep(1,nh))), rep(1,nb*nw)))
   beq2 = rep(0,nh*nb)
   
   #Participation constraint
   A1 = -(1-be)*((1-tau)^-1*kronecker(rep(1, nb*nh),wages)^(1-tau)) -
-       be*kronecker(rep(1, nh), kronecker(output, rep(1, nw))) -(kronecker(1-action, rep(1,nw*nb)))
+    be*kronecker(rep(1, nh), kronecker(output, rep(1, nw))) -(kronecker(1-action, rep(1,nw*nb)))
   b1 = -U
   
   #Incentive compatibility constraints
@@ -237,14 +236,18 @@ program.B=function(be=0,tau=0,U=.5,nw=60,wmin=1,nh=90,nb=5,hmin=10^-8){
   
   result=c(list(final),list(-valor));names(result)=c("opt.values","exp.utility")
   return(result)
-  }
+}
 
-#Examples 1. Benchmarks solutions.
-program.A()           #Benchmark A 
-program.B()           #Benchmark B
+######################################## Solve #########################################################
+program.A()                #Case A (Table 3)
+program.B()                #Case B (Table 6)
 
-#Examples 2. Changing the parameters.
-program.A(a=.2)       
-program.A(tau=-.2)
-program.B(be=.2)
+########################################
+## Solution for different parameters ###
+########################################
+program.A(a=.1)            #Table 4
+program.A(tau=-.5)         #Table 5
 
+program.B(be=.5)           #Table 7
+program.B(U=0.2)           #Table 8
+program.B(tau=-.5)         #Table 9
